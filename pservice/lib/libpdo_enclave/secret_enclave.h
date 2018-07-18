@@ -84,3 +84,7 @@ extern pdo_err_t ecall_GenerateEnclaveSecret(
     const char* inEnclaveInfo,
     uint8_t* outSignedSecret,
     size_t inAllocatedSignedSecretSize);
+
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+extern pdo_err_t ocall_TestIOcalls(const char* inFilename,
+    const char* outOutput)

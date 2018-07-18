@@ -44,6 +44,7 @@
 #include "enclave_data.h"
 #include "enclave_utils.h"
 #include "secret_enclave.h"
+// #include "io.h"
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // XX Declaration of static helper functions                         XX
@@ -57,6 +58,8 @@ static void CreateReportData(const char* pOriginatorPublicKeyHash,
     std::string& enclaveId,
     std::string& enclaveEncryptKey,
     sgx_report_data_t* pReportData);
+
+
 
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -671,3 +674,55 @@ void CreateReportData(const char* pOriginatorPublicKeyHash,
         reinterpret_cast<sgx_sha256_hash_t*>(pReportData));
     pdo::error::ThrowSgxError(ret, "Failed to retrieve SHA256 hash of report data");
 }  // CreateReportData
+
+
+
+//Need to write ocall functionality
+// int ocall_open(const char* filename, int mode) {
+//     return open(filename, mode);
+// }
+
+// int ocall_read(int file, void *buf, unsigned int size) {
+//     return read(file, buf, size);
+// }
+
+// int ocall_write(int file, void *buf, unsigned int size) {
+//     return write(file, buf, size);
+// }
+
+// void ocall_close(int file) {
+//     close(file);
+// }
+
+//Where thread will probably lie
+pdo_err_t ocall_TestIOcalls(const char* inFilename,
+    const char* outOutput)
+{
+    pdo_err_t result = PDO_SUCCESS;
+
+    try {
+
+        int size;
+
+        //Call IO operations (open, read, write) here
+
+
+
+
+    }catch (pdo::error::Error& e) {
+        Log(
+            PDO_LOG_ERROR,
+            "Error in pdo enclave(ocall_TestIOcalls): %04X -- %s",
+            e.error_code(),
+            e.what());
+        ocall_SetErrorMessage(e.what());
+        result = e.error_code();
+    } catch (...) {
+        Log(
+            PDO_LOG_ERROR,
+            "Unknown error in pdo enclave(ocall_TestIOcalls)");
+        result = PDO_ERR_UNKNOWN;
+    }
+
+    return result;
+}// ocall_TestIOcalls

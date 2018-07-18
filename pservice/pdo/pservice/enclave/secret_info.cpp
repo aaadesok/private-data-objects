@@ -309,3 +309,25 @@ std::map<std::string, std::string> generate_enclave_secret(
     return result;
 } // _generate_enclave_secret
 
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+std::map<std::string, std::string> test_ocalls(
+    const std::string& file_name
+    )
+{
+    pdo_err_t presult;
+
+    std::string output;
+
+    presult = pdo::enclave_api::enclave_data::TestIOCalls(
+        file_name,
+        output);
+    ThrowPDOError(presult);
+
+    PyLog(PDO_LOG_DEBUG, ("File output: " + output).c_str());
+
+    std::map<std::string, std::string> result;
+    result["output"] = output;
+
+    return result;
+} // _test_ocalls
+

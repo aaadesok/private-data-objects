@@ -83,3 +83,7 @@ std::map<std::string, std::string> generate_enclave_secret(
     const std::string& opk,
     const std::string& enclave_info
     );
+
+std::map<std::string, std::string> test_ocalls(
+    const std::string& file_name
+    );

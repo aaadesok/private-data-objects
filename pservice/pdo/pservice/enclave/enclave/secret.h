@@ -62,6 +62,11 @@ namespace pdo
                 Base64EncodedString& ouSignedSecret
                 );
 
+            pdo_err_t TestIOCalls(
+                const std::string& inFilename,
+                Base64EncodedString& outOutput
+                );
+
 
         } /* secret namespace */
 

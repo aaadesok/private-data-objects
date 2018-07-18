@@ -394,6 +394,9 @@ def LocalMain(config) :
         logger.exception('failed to initialize enclave; %s', e)
         sys.exit(-1)
 
+    this_file = ""
+    pdo_enclave_helper.test_ocalls(this_file)
+
     RunProvisioningService(config, enclave)
 
 ## XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

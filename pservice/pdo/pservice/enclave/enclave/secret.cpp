@@ -491,3 +491,49 @@ pdo_err_t pdo::enclave_api::enclave_data::GenerateEnclaveSecret(
 
     return result;
 } // pdo::enclave_api::base::GenerateEnclaveSecret
+
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+pdo_err_t pdo::enclave_api::enclave_data::TestIOCalls(
+        const std::string& inFilename,
+        std::string& outOutput
+    )
+{
+    pdo_err_t result = PDO_SUCCESS;
+
+    try {
+
+        // xxxxx call the enclave
+        sgx_enclave_id_t enclaveid = g_Enclave.GetEnclaveId();
+
+        pdo_err_t presult = PDO_SUCCESS;
+        sgx_status_t sresult = g_Enclave.CallSgx(
+            [ enclaveid,
+              &presult,
+              inFilename,
+              &outOutput] ()
+            {
+                sgx_status_t sresult =
+                ocall_TestIOcalls(
+                    enclaveid,
+                    &presult,
+                    inFilename.c_str(),
+                    outOutput);
+                return pdo::error::ConvertErrorStatus(sresult, presult);
+            });
+        pdo::error::ThrowSgxError(sresult, "SGX enclave call failed (ocall_open)");
+        g_Enclave.ThrowPDOError(presult);
+
+
+    } catch (pdo::error::Error& e) {
+        pdo::enclave_api::base::SetLastError(e.what());
+        result = e.error_code();
+    } catch (std::exception& e) {
+        pdo::enclave_api::base::SetLastError(e.what());
+        result = PDO_ERR_UNKNOWN;
+    } catch (...) {
+        pdo::enclave_api::base::SetLastError("Unexpected exception");
+        result = PDO_ERR_UNKNOWN;
+    }
+
+    return result;
+} // pdo::enclave_api::base::TestIOCalls

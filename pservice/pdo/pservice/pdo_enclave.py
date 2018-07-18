@@ -39,6 +39,7 @@ __all__ = [
     'create_secret',
     'unseal_secret',
     'generate_enclave_secret',
+    'test_ocalls',
     'shutdown'
 ]
 
@@ -207,6 +208,12 @@ def unseal_secret(secret): return enclave.unseal_secret(secret)
 # -----------------------------------------------------------------
 def generate_enclave_secret(enclave_sealed_data, sealed_secret, contract_id, opk, enclave_info):
  return enclave.generate_enclave_secret(enclave_sealed_data, sealed_secret, contract_id, opk, enclave_info)
+
+
+# -----------------------------------------------------------------
+# -----------------------------------------------------------------
+def test_ocalls(filename): return enclave.test_ocalls(filename)
+
 
 # -----------------------------------------------------------------
 # -----------------------------------------------------------------

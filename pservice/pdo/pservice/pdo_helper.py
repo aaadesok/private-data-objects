@@ -154,6 +154,10 @@ class Enclave(object) :
         return pdo_enclave.generate_enclave_secret(enclave_sealed_data, sealed_secret, contract_id, opk, enclave_info)
 
     # -------------------------------------------------------
+    def test_ocalls(self, filename) : return pdo_enclave.test_ocalls(filename)
+
+
+    # -------------------------------------------------------
     def get_enclave_public_info(self) :
         """
         return information about the enclave; we could short circuit
