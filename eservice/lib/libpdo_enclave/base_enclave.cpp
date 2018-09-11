@@ -51,6 +51,21 @@ pdo_err_t ecall_Initialize()
     return result;
 }  // ecall_Initialize
 
+pdo_err_t ecall_worker()
+{
+    SAFE_LOG(PDO_LOG_DEBUG, "worker entered enclave");
+    while (1)
+    {
+        ContractRequest::worker();
+#ifdef VCA
+        // poll the VCA queue for work
+        // do work
+#endif
+    }
+
+    return PDO_SUCCESS;
+}  // ecall_worker
+
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 pdo_err_t ecall_CreateErsatzEnclaveReport(sgx_target_info_t* targetInfo, sgx_report_t* outReport)
 {

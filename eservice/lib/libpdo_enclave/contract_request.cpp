@@ -67,6 +67,28 @@
 // }
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
+enum {
+    INTERPRETER_READY,
+    INTERPRETER_BUSY,
+    INTERPRETER_DONE
+} interpreter_state;
+
+
+GipsyInterpreter *g_interpreter = NULL;
+pthread_spinlock_t g_interpreter_state_lock;
+interpreter_state g_interpreter_state = INTERPRETER_DONE;
+
+ContractRequest::worker(void) {
+    //
+    if (g_interpreter_state == INTERPRETER_DONE) {
+        if (g_interpreter != NULL) {
+            ~g_interpreter();
+        }
+        g_interpreter = new GipsyInterpreter();
+        g_interpreter_state = INTERPRETER_READY;
+    }
+}
+
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ContractRequest::ContractRequest(
         const ByteArray& session_key, const ByteArray& encrypted_request)
@@ -236,9 +258,13 @@ ContractResponse ContractRequest::process_update_request(void)
     {
 #ifdef INTKEY_CPP_CONTRACT_TEST
         CppProcessor interpreter;
-#else
-        GipsyInterpreter interpreter;
 #endif
+
+        // Wait until the interpreter is ready
+        // TODO LOCK
+        while (g_interpreter_state != INTERPRETER_READY) ;
+
+        g_interpreter_state = INTERPRETER_BUSY;
 
         pdo::contracts::ContractCode code;
         code.Code = contract_code_.code_;
@@ -257,8 +283,10 @@ ContractResponse ContractRequest::process_update_request(void)
         std::map<string, string> dependencies;
         std::string result;
 
-        interpreter.send_message_to_contract(contract_id_, creator_id_, code, msg,
+        interpreter->send_message_to_contract(contract_id_, creator_id_, code, msg,
             current_contract_state, new_contract_state, dependencies, result);
+
+        g_interpreter_state = INTERPRETER_DONE;
 
         // check for operations that did not modify state
         if (new_contract_state.State.empty())

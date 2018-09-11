@@ -77,6 +77,10 @@ pdo_err_t pdo::enclave_api::base::Initialize(
             pdo::SetLogFunction(logFunction);
             g_Enclave.SetSpid(inSpid);
             g_Enclave.Load(inPathToEnclave);
+
+            thread = pthread_create(g_Enclave.Worker());
+            thread.run();
+
             g_IsInitialized = true;
         }
     } catch (pdo::error::Error& e) {
