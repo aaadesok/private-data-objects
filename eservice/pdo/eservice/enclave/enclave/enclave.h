@@ -95,6 +95,7 @@ namespace pdo {
                 return this->enclaveId;
             }
 
+
         protected:
             void LoadEnclave();
             static void QuerySgxStatus();
@@ -107,14 +108,16 @@ namespace pdo {
 
             std::string signatureRevocationList;
             sgx_spid_t spid;
-            
+
             sgx_target_info_t reportTargetInfo;
             sgx_epid_group_id_t epidGroupId;
         }; // class Enclave
+
+        static void* Worker(void* arg);
 
     }                          /* namespace enclave_api */
 
 } // namespace pdo
 
 
-extern pdo::enclave_api::Enclave g_Enclave;
+extern std::vector<pdo::enclave_api::Enclave> g_Enclave;

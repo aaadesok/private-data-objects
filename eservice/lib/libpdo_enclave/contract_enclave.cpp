@@ -21,6 +21,7 @@
 #include <sgx_trts.h>
 #include <sgx_tseal.h>
 #include <sgx_utils.h>
+#include "sgx_thread.h"
 
 #include "error.h"
 #include "packages/base64/base64.h"

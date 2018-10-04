@@ -21,6 +21,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <unistd.h>
+#include <pthread.h>
 
 #include <sgx_uae_service.h>
 #include "sgx_support.h"
@@ -32,10 +33,12 @@
 #include "types.h"
 #include "zero.h"
 
+
+
 #include "enclave.h"
 
 extern std::string g_enclaveError;
-pdo::enclave_api::Enclave g_Enclave;
+std::vector<pdo::enclave_api::Enclave> g_Enclave;
 
 namespace pdo {
     namespace error {
@@ -70,12 +73,12 @@ namespace pdo {
             sgx_status_t ret = sgx_calc_quote_size(nullptr, 0, &size);
             pdo::error::ThrowSgxError(ret, "Failed to get SGX quote size.");
             this->quoteSize = size;
-            
+
             //initialize the targetinfo and epid variables
-            ret = g_Enclave.CallSgx([this] () {
-                    return sgx_init_quote(&this->reportTargetInfo, &this->epidGroupId); 
+            ret = g_Enclave[0].CallSgx([this] () {
+                    return sgx_init_quote(&this->reportTargetInfo, &this->epidGroupId);
                 });
-            pdo::error::ThrowSgxError(ret, "Failed to initialized quote in enclave constructore"); 
+            pdo::error::ThrowSgxError(ret, "Failed to initialized quote in enclave constructore");
         } // Enclave::Enclave
 
         // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -129,11 +132,11 @@ namespace pdo {
         {
             sgx_status_t ret;
             //retrieve epid by calling init quote
-            ret = g_Enclave.CallSgx([this] () {
-                        return sgx_init_quote(&this->reportTargetInfo, &this->epidGroupId); 
-                    }); 
-            pdo::error::ThrowSgxError(ret, "Failed to get epid group id from init_quote"); 
-            
+            ret = g_Enclave[0].CallSgx([this] () {
+                        return sgx_init_quote(&this->reportTargetInfo, &this->epidGroupId);
+                    });
+            pdo::error::ThrowSgxError(ret, "Failed to get epid group id from init_quote");
+
             //copy epid group into output parameter
             memcpy_s(
                 outEpidGroup,
